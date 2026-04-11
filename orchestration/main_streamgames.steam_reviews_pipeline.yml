@@ -3,8 +3,23 @@ namespace: steamgames
 description: |
   Test update
 
+inputs:
+  - id: month
+    type: SELECT
+    displayName: Select the month to pull from
+    values: [january, february, march, april, may, june, july, august, september, october, november, december]
+
+  - id: year
+    type: INT
+    displayName: Enter the year to pull from
+    min: 2024
+
+
 variables:
-  file: "games_{{trigger.date | dateAdd(-1, 'DAYS') | date('MMMMyyyy') | lower}}_full.csv"
+  file: "games_{{inputs.month}}{{inputs.year}}_full"
+  gcs_file: "gs://{{kv('GCP_BUCKET_NAME')}}/{{vars.file}}.parquet"
+  table: "{{kv('GCP_DATASET')}}.steamdata_{{inputs.month}}{{inputs.year}}"
+  data: "{{outputs.extract.outputFiles['data/games_' ~ inputs.month ~ inputs.year ~ '_full.parquet']}}"
 
 tasks:
   - id: set_label
@@ -12,29 +27,18 @@ tasks:
     labels:
       file: "{{render(vars.file)}}"
 
-  - id: git_ingestion_script
+  - id: extract
     type: io.kestra.plugin.scripts.python.Commands
     taskRunner:
       type: io.kestra.plugin.core.runner.Process
     description: "Extracts data from kaggle"
-    beforeCommands:
-      - pip install -r /infrastructure/requirements.txt > /dev/null
     env:
       KAGGLE_USERNAME: "{{ secret('KAGGLE_USERNAME') }}"
       KAGGLE_KEY: "{{ secret('KAGGLE_KEY') }}"
     commands:
-      - python /infrastructure/ingestion_from_kaggle.py --download_directory "data" --download_file "{{render(vars.file)}}" --kaggle_dataset "artermiloff/steam-games-dataset"
+      - python /orchestration/ingestion_from_kaggle.py --download_directory "data" --download_file "{{render(vars.file)}}" --kaggle_dataset "artermiloff/steam-games-dataset"
     outputFiles:
       - "data/*.parquet"
-
-  - id: extract
-    type: io.kestra.plugin.scripts.shell.Commands
-    outputFiles:
-      - "*.csv"
-    taskRunner:
-      type: io.kestra.plugin.core.runner.Process
-    commands:
-      - wget -qO- https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{{inputs.taxi}}/{{render(vars.file)}}.gz | gunzip > {{render(vars.file)}}
 
   - id: upload_to_gcs
     type: io.kestra.plugin.gcp.gcs.Upload
@@ -147,3 +151,19 @@ triggers:
   - id: monthly_schedule
     type: io.kestra.plugin.core.trigger.Schedule
     cron: "@monthly"
+    inputs:
+      month: "{{trigger.date | dateAdd(-1, 'DAYS') | date('MMMM') | lower}}"
+      year: "{{trigger.date | dateAdd(-1, 'DAYS') | date('yyyy')}}"
+
+
+
+
+
+
+
+
+
+
+
+
+

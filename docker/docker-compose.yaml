@@ -29,7 +29,7 @@ services:
 
   kestra:
     env_file: .env_encoded
-    image: kestra/kestra:latest
+    build: .
     pull_policy: always
     user: "root"
     command: server standalone
@@ -37,8 +37,8 @@ services:
       - kestra_data:/app/storage
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/kestra-wd:/tmp/kestra-wd
-      - ../infrastructure:/local_flows
-      - ../infrastructure:/infrastructure
+      - ../orchestration:/local_flows
+      - ../orchestration:/orchestration
     environment:
       KESTRA_CONFIGURATION: |
         datasources:
@@ -58,6 +58,8 @@ services:
             basicAuth:
               username: "admin@kestra.io"
               password: Admin1234
+          tutorial-flows:
+            enabled: false
           repository:
             type: postgres
           storage:
