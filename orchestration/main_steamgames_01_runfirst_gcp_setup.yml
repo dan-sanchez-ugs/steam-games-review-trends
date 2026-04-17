@@ -1,0 +1,55 @@
+id: 01_runfirst_gcp_setup
+namespace: steamgames
+description: |
+  Run this first to initialize KV pairs and the GCP plugin defaults
+
+inputs:
+  - id: projectid
+    type: STRING
+    displayName: Enter same project ID entered in terraform.tfvars
+
+  - id: location
+    type: STRING
+    displayName: Enter same Location entered in terraform.tfvars
+    defaults: US
+
+  - id: bucketname
+    type: STRING
+    displayName: Enter same Google Cloud Storage bucket name entered in terraform.tfvars
+
+  - id: dataset
+    type: STRING
+    displayName: Enter same BigQuery dataset name entered in terraform.tfvars
+
+tasks:
+  - id: gcp_project_id
+    type: io.kestra.plugin.core.kv.Set
+    key: GCP_PROJECT_ID
+    kvType: STRING
+    value: "{{inputs.projectid}}"
+
+  - id: gcp_location
+    type: io.kestra.plugin.core.kv.Set
+    key: GCP_LOCATION
+    kvType: STRING
+    value: "{{inputs.location}}"
+
+  - id: gcp_bucket_name
+    type: io.kestra.plugin.core.kv.Set
+    key: GCP_BUCKET_NAME
+    kvType: STRING
+    value: "{{inputs.bucketname}}"
+
+  - id: gcp_dataset
+    type: io.kestra.plugin.core.kv.Set
+    key: GCP_DATASET
+    kvType: STRING
+    value: "{{inputs.dataset}}"
+
+pluginDefaults:
+  - type: io.kestra.plugin.gcp
+    values:
+      serviceAccount: "{{secret('GCP_SERVICE_ACCOUNT')}}"
+      projectId: "{{kv('GCP_PROJECT_ID')}}"
+      location: "{{kv('GCP_LOCATION')}}"
+      bucket: "{{kv('GCP_BUCKET_NAME')}}"
