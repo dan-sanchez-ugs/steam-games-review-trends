@@ -48,12 +48,18 @@ Following the Kestra Gantt view:
     - dbt_build
         - builds the dbt project in the repository to transform the data and remove unnecessary columns
 
-
-  
 # Dashboard
+Metabase was used to create a dashboard to visualize key datapoints within the data set. This can easily be expanded upon for much more in depth analysis, but it sufficiently demonstrates the pipeline's ability to be used for data analysis
 
 # Insights
+- Positive reviews outnumber negative reviews by a staggering amount! While the ratio will of course fluctuate from game to game, seeing well over 80% of reviews being positive is fascinating
+- Counter Strike 2 is absurdly popular. The next most positively reviewed game, Rainbow Six Seige, doesn't even come close to having half as many positive reviews.
+- The comparison between Counter Strike 2 and PUBG is stark. While PUBG is ranked 5th in positive reviews, it is rankled 2nd in negative. It is the only game close to Counter Strike 2's negative reviews, and all other games have less than half of the negative reviews that Counter Strike 2 has.
+- Release date(and therefore age) of a game doesn't seem to affected the amount of reviews a game gets.
+- Games under $19 generally see far less reviews than those more expensive. The dataset removes all games with less than 100 reviews, so the games in this data all have, at the minimum, a niche audience.
+- The number of reviews trends upwards with a higher amount of peak concurrent players for a game. Peak concurrent players is a good measure of how popular a game is/was at its most popular time, so it makes sense that a game with a larger audience would have more reviews.
 
 # Challenges
-
+- The data source has files available from only two times, limiting how much the data can be compared across time. A data set that was updated more frequently could lead to analytics than measure trends over time.
+  
 # Reproducing the Project
