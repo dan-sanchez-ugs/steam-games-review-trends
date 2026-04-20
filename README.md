@@ -48,6 +48,7 @@ Following the Kestra Gantt view:
         - clones the github repository for use by dbt
     - dbt_build
         - builds the dbt project in the repository to transform the data and remove unnecessary columns
+	- unit tests will happen individually after this
 
 # Dashboard
 Metabase was used to create a dashboard to visualize key datapoints within the data set. This can easily be expanded upon for much more in depth analysis, but it sufficiently demonstrates the pipeline's ability to be used for data analysis
