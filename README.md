@@ -33,7 +33,7 @@ Following the Kestra Gantt view:
 - load_initialize_table
     - If the table does not exist, creates the table in BigQuery that will hold the raw data of the ingested file along with an additional timestamp column
     - The table is partitioned by timestamp, which is generated based on the file ingested. While not used in the pipeline, it could be used to optimize future queries that want to target data from a specific file ingested
-- load_to_extenral_table
+- load_to_external_table
     - Creates an external table using the parquet file for an immediate transformation
     - This transformation is necessary here to ensure there is an easy way to distinguish between rows containing the same game's data that were added from different files
 - transform_add_timestamp
@@ -88,12 +88,15 @@ Metabase was used to create a dashboard to visualize key datapoints within the d
 			echo "SECRET_${key}=${encoded}"
 		done > docker/.env_encoded
         echo "SECRET_GCP_SERVICE_ACCOUNT=$(cat infrastructure/keys/my-service-account.json | base64 -w 0)" >> docker/.env_encoded
-	- In `dbt/models/schema.yml`, update database and schema to your GCP Project ID and BigQuery dataset name, respectively
+	- In `dbt/models/staging/schema.yml`, update database and schema to your GCP Project ID and BigQuery dataset name, respectively
 
 3. Create the infrastructure on Google Cloud Platform via Terraform
 	- In `infrastructure/terraform.tfvars`, adjust all values other than `credentials` to match to your GCP project
 	```bash
-	sudo apt install terraform
+	wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+	echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+	sudo apt update && sudo apt install terraform
+ 
 	terraform -chdir=infrastructure init
 	terraform -chdir=infrastructure apply	
 
