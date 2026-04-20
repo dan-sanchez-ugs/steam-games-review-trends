@@ -39,6 +39,6 @@ models:
   steam_review_trends:
     # Applies to all files under models/example/
     staging:
-      materialized: view
+      +materialized: view
     core:
-      materialized: table
+      +materialized: table
