@@ -204,6 +204,14 @@ tasks:
       branch: main
       directory: steam-games-review-trends
       
+    - id: edit_dbt_staging_source
+      type: io.kestra.plugin.scripts.shell.Commands
+      taskRunner:
+        type: io.kestra.plugin.core.runner.Process
+      commands:
+        - "sed -i 's/database: YOUR_GCP_PROJECT_ID/database: {{kv('GCP_PROJECT_ID')}}/' ./steam-games-review-trends/dbt/models/staging/schema.yml"
+        - "sed -i 's/schema: YOUR_BIGQUERY_DATASET_NAME/schema: {{kv('GCP_DATASET')}}/' ./steam-games-review-trends/dbt/models/staging/schema.yml"
+
     - id: dbt_build
       type: io.kestra.plugin.dbt.cli.DbtCLI
       env:
@@ -236,12 +244,6 @@ tasks:
               timeout_seconds: 300
               fixed_retries: 1
           target: dev
-    description: |
-      sources:
-        - name: staging
-          database: "{{kv('GCP_PROJECT_ID')}}"
-          schema: "{{kv('GCP_DATASET')}}"
-          table: steam_data
 
           
 
