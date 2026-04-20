@@ -2,19 +2,19 @@
 credentials        = "./keys/my-service-account.json"
 
 # Your GCP project ID
-project         = "steam-review-trends"
+project         = "YOUR_GCP_PROJECT_ID"
 
 # Region for resources like Cloud Storage buckets (use a valid GCP region code)
-region             = "us-central1"
+region             = "YOUR_REGION"
 
 # Location for BigQuery dataset (use valid BigQuery location codes like 'EU', 'US', or a region)
-location           = "US"
+location           = "YOUR_LOCATION"
 
 # Name for your Google Cloud Storage bucket (must be globally unique)
-gcs_bucket_name    = "steam_review_trends_bucket"
+gcs_bucket_name    = "YOUR_GCP_BUCKET_NAME"
 
 # Storage class for the bucket (e.g., STANDARD, NEARLINE, COLDLINE, ARCHIVE)
 gcs_storage_class  = "STANDARD"
 
 # BigQuery dataset name
-bq_dataset_name    = "steam_review_trends_dataset"
+bq_dataset_name    = "YOUR_BIGQUERY_DATASET_NAME"
