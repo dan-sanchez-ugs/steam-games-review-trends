@@ -63,3 +63,51 @@ Metabase was used to create a dashboard to visualize key datapoints within the d
 - The data source has files available from only two times, limiting how much the data can be compared across time. A data set that was updated more frequently could lead to analytics than measure trends over time.
   
 # Reproducing the Project
+1. Clone the repository 
+   ```bash
+   git clone https://github.com/dan-sanchez-ugs/steam-games-review-trends.git
+   cd steam-games-review-trends
+
+2. Setup
+	- Create a Google Cloud account with your Gmail
+	- Create a new project on GCP
+	- Create a new service account with BigQuery Admin/Compute Admin/Storage Admin
+	- Add a key as a JSON from the newly created service account
+	- Download the JSON, move it to the `infrastructure/keys` folder. Rename it to `my-service-account.json`
+	- Create kaggle account, go to settings
+	- Create a new API token. Copy the token, paste it into `docker/.env` as the value for `KAGGLE_KEY`
+	- Copy your Kaggle username, paste it into `docker/.env` as the value for `KAGGLE_USERNAME`
+	- encode the values in `docker/.env` and your GCP Service Account JSON:
+		```bash
+		grep -vE '^\s*(#|$)' docker/.env | while IFS='=' read -r key value; do
+			clean_value=$(echo "$value" | sed -e 's/^["'\'']//' -e 's/["'\'']$//')
+			encoded=$(printf "%s" "$clean_value" | base64)    
+			echo "SECRET_${key}=${encoded}"
+		done > docker/.env_encoded
+        echo "SECRET_GCP_SERVICE_ACCOUNT=$(cat infrastructure/keys/my-service-account.json | base64 -w 0)" >> docker/.env_encoded
+	- In `dbt/models/schema.yml`, update database and schema to your GCP Project ID and BigQuery dataset name, respectively
+
+3. Create the infrastructure on Google Cloud Platform via Terraform
+	- In `infrastructure/terraform.tfvars`, adjust all values other than `credentials` to match to your GCP project
+	```bash
+	sudo apt install terraform
+	terraform -chdir=infrastructure init
+	terraform -chdir=infrastructure apply	
+
+4. Launch Kestra via Docker and run the pipeline
+	```bash
+	docker-compose -f docker/docker-compose.yaml up -d
+    ```
+	- Open Kestra at http://localhost:8080
+	- Go to Flows
+	- Execute `01_runfirst_gcp_setup`. Enter the appropriate values as instructed.
+	- Execute `steam_reviews_pipeline`. The pipeline will fail unless using a month and year combination that corresponds to a file that exists on Kaggle for the dataset. For testing, use march and 2025.
+
+5. Run Metabase via Docker.
+	```bash
+	docker run -d -p 3000:3000 --name metabase metabase/metabase
+    ```
+	- Open Metabase at http://localhost:3000
+	- Connect to BigQuery as your datasource. Use the JSON you downloadeed in the Setup step above.
+	- From here, you can explore Metabase and create dashboards as you see fit.
+
