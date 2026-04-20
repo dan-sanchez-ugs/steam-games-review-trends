@@ -1,0 +1,82 @@
+user:
+  outputs:
+    default:
+      keyfile_json:
+        auth_provider_x509_cert_url: https://www.googleapis.com/oauth2/v1/certs
+        auth_uri: https://accounts.google.com/o/oauth2/auth
+        client_email: pipeline-usage@steam-review-trends.iam.gserviceaccount.com
+        client_id: '107041682420043499862'
+        client_x509_cert_url: https://www.googleapis.com/robot/v1/metadata/x509/pipeline-usage%40steam-review-trends.iam.gserviceaccount.com
+        private_key: '-----BEGIN PRIVATE KEY-----
+
+          MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDckPoWm8TbxusX
+
+          /n0/0DALzmvTRz7qpVw9SD/Xj28M4YvI+jSWq2jiNWuZ2089Yx9ubfJqJiuJXVfS
+
+          JHFwu0+WTha6Buv5k19REbQgVGCrzcjvv/GJDJ5ZG2f0U/HAtuitmb6GLH1apY+z
+
+          4JhGmu+QdH8sY/BBWfHEjIgPkvX1FTpgteXSb/6/evler55II4My9AX31q/qrmyU
+
+          prwxfjG7/0bxJ3CWMUdYfPZNLC3e5QratZj41cy1KsS08C7H41ZS47rxfYRQoe0h
+
+          0nsMd2E4ww7yCi44M/HU/6qca5VR2gjci8YJzOIlEIhLaitfDat9NLJpUQB7Hk6o
+
+          xaxvlspdAgMBAAECggEAOtbmEF/vjR2sm5MFQJ++IXgopY0tCJWiXKrIdS3LVylY
+
+          C/5LRyJk8WuEz9+EbQDjYqcr8wtJs/RVuDaGmKcvXQ5p26h7DPI2jD7nyXQY8dwM
+
+          zYBr476dA3JfMfuu01U4Dw+jltGJg0QFaNvyY2tzmxqozmO+tQBUkbVXmqf+uyk2
+
+          yIY//vTSxPxQzqxpiRvfgGpzAf1FLjsksautSRF1SffVk96HAaqozPmrCQYREt3y
+
+          6fWsHVJOis48y5gLYOjyKpIM7aLuJ6O4Rqsn8uU3TSRBpklc0uSQ3aj/ybEy1CIP
+
+          brOWUEraZSJWmqtqCM/7x3RK1p5A4+bIppi4/cHfdQKBgQDt0LF31IhqitL7Z9LU
+
+          cZGoz5xEnqgzc11XYzR8iZiLucLD4BKv8Q3PHXOd/76+wPNTn3oFyVvOUpUV+IO2
+
+          Nf4p/hWbKfQ48kMyDNdfzm9+wIMBYdmrvcrReoHiHEuk+gYwzlBvPTwWD18hcawq
+
+          rad3/p4dgQglHqeVh7+tmbsbxwKBgQDtbqGZCeKTOjgfxlGAytH6xhCzxKBYmTmG
+
+          DENGdC619pBzfbqkf6/qoB+d0PoToTdu7TUSjG/+oeODzkpPSuM1vTDD7gUHcm64
+
+          0j9Rcv3K+jnkNDuIuhYicbAAXgWafM1dEwFLd6KMgYMEaCwisLI0B6TLqHhOhkYS
+
+          W0vY/cqAuwKBgQDh7mCLzXiEb7sdaXecqQCO9h4p+uklaDaHbRJSNo6cQDDO0jQu
+
+          vr41xG8w7eUTaFBDY8ETekcj7sUAiIbpNsZusptoPCVvbIl2JUkAFilKrC5Jw+J+
+
+          DOOAu/hlDii3ZWk4OOmlpPFOq+/e4BWGvk/Z6iXhNdK9ITBpGPx7Ow/NxQKBgQDR
+
+          nLPpqgJvvBxEYQ8fRu+uFyIzsslkrpFMOJNEJdn/JxhL/ZnDFD84QfjnmNDOd6u6
+
+          sIwEPhu5jy6O9JZB/nksvkPJFd82vd3mKSdhPsW0ZsipITvV74MPEZMyH8+OndOn
+
+          8dlYyNumc8g5IcalMZ2BtaXVbnwXxw8hsZv6i8Q1dQKBgQDLfB0aiLIdvasjUuuv
+
+          O+Nh+Z9nH0IB5UKy3p6o1D+RE8SiytEKX0ZkaqpEFElxkgWadLD5fOuhDNkeUdh8
+
+          eberZvoD0Jfr/dtBt62G8eI2egkv/OZ+U6B7CVensZ49XGqnOwRaxhbV7Chg1Due
+
+          sxqiChcZnhz5/p6kQA52n1ImfA==
+
+          -----END PRIVATE KEY-----
+
+          '
+        private_key_id: d023ba3f5efb91906f34a722ef82fd35f587aee0
+        project_id: steam-review-trends
+        token_uri: https://oauth2.googleapis.com/token
+        type: service_account
+      method: service-account-json
+      project: steam-review-trends
+      schema: dbt_dsanchez
+      scopes:
+      - https://www.googleapis.com/auth/bigquery
+      - https://www.googleapis.com/auth/cloud-platform
+      - https://www.googleapis.com/auth/drive
+      - https://www.googleapis.com/auth/userinfo.email
+      target_name: default
+      threads: 4
+      type: bigquery
+  target: default

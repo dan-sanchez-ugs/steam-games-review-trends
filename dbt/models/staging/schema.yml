@@ -1,0 +1,73 @@
+
+version: 2
+
+sources:
+  - name: staging
+    database: steam-review-trends # Change to the ID of your GCP Project
+    schema: steam_review_trends_dataset # Change to the name of your BigQuery dataset
+
+    tables:
+      - name: steam_data
+models:
+  - name: stg_review_data
+    description: "Staging model for enriched Steam Games Review data. Excludes columns that are not relevant to tracked metrics."
+    columns:
+      - name: unique_id
+        description: "The unique ID for this row. Multiple games may have the same name. Game IDs will be the same between different uploaded files. This will always be unique."
+        tests:
+          - not_null
+          - unique
+
+      - name: file_timestamp
+        description: "The year and month of the file from which the data was loaded, in the format YYYYmmmm."
+        tests:
+          - not_null
+
+      - name: game_id
+        description: "The numeric ID of the game on Steam. This is a unique identifier for each game."
+        tests:
+          - not_null
+
+      - name: game_name
+        description: "The name of the game as listed on Steam."
+        tests:
+          - not_null
+
+      - name: price
+        description: "The current price of the game in USD. This is the price at the time the data was collected."
+        tests:
+          - not_null      
+
+      - name: release_date
+        description: "The date when the game was released on Steam."
+        tests:
+          - not_null
+
+      - name: dlc_count
+        description: "The number of downloadable content (DLC) packages available for the game. DLCs are additional content that can be purchased separately from the base game."
+    
+      - name: estimated_owners
+        description: "Timestamp when the article was extracted from source"
+        tests:
+          - not_null
+
+      - name: average_playtime
+        description: "The average playtime for the game over its lifetime."
+
+      - name: peak_concurrent_players
+        description: "The peak concurrent players for the game."
+        tests:
+          - not_null
+
+      - name: total_reviews
+        description: "The total number of reviews for the game. -1 indicates that there are no reviews for the game."
+
+      - name: positive_reviews
+        description: "The number of positive reviews for the game."
+        tests:
+          - not_null
+
+      - name: negative_reviews
+        description: "The number of negative reviews for the game."
+        tests:
+          - not_null
