@@ -3,8 +3,8 @@ version: 2
 
 sources:
   - name: staging
-    database: steam-review-trends # Change to the ID of your GCP Project
-    schema: steam_review_trends_dataset # Change to the name of your BigQuery dataset
+    database: YOUR_GCP_PROJECT_ID # Change to the ID of your GCP Project
+    schema: YOUR_BIGQUERY_DATASET_NAME # Change to the name of your BigQuery dataset
 
     tables:
       - name: steam_data
