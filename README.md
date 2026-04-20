@@ -24,6 +24,7 @@ The project uses a [dataset found on Kaggle](https://www.kaggle.com/datasets/art
 - Metabase – a relatively simple dashboard creation tool. Chosen for its ease of use
 
 # Pipeline Workflow
+![Pipeline](https://github.com/dan-sanchez-ugs/steam-games-review-trends/blob/main/documentation/gantt_view.png)
 Following the Kestra Gantt view:
 - extract
     - Uses the python script `ingestion_from_kaggle.py` to ingest the data as a CSV and convert it to parquet
@@ -50,6 +51,7 @@ Following the Kestra Gantt view:
 
 # Dashboard
 Metabase was used to create a dashboard to visualize key datapoints within the data set. This can easily be expanded upon for much more in depth analysis, but it sufficiently demonstrates the pipeline's ability to be used for data analysis
+![Dashboard](https://github.com/dan-sanchez-ugs/steam-games-review-trends/blob/main/documentation/metabase_dashboard.jpg)
 
 # Insights
 - Positive reviews outnumber negative reviews by a staggering amount! While the ratio will of course fluctuate from game to game, seeing well over 80% of reviews being positive is fascinating
@@ -111,3 +113,12 @@ Metabase was used to create a dashboard to visualize key datapoints within the d
 	- Connect to BigQuery as your datasource. Use the JSON you downloadeed in the Setup step above.
 	- From here, you can explore Metabase and create dashboards as you see fit.
 
+6. Cleanup and additional notes
+	- Stop all docker containers, kill all resources created by Terraform, and free all resources created by docker(Remove the last line if you have other docker volumes you want to keep)
+	```bash
+ 		docker-compose -f docker/docker-compose.yaml down
+	docker stop $(docker ps -q)
+	terraform -chdir=infrastructure destroy
+	docker system prune --volumes --all
+ 	```
+ 	- NOTE: **DO NOT** commit the .env or .json files to GitHub! Both of these files will contain sensitive information to your Google and Kaggle accounts. 
