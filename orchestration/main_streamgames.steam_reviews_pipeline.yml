@@ -27,10 +27,6 @@ variables:
 
 
 tasks:
-  - id: set_label
-    type: io.kestra.plugin.core.execution.Labels
-    labels:
-      file: "{{render(vars.file)}}"
 
   - id: extract
     type: io.kestra.plugin.scripts.python.Commands
@@ -55,7 +51,7 @@ tasks:
     sql: |
       CREATE TABLE IF NOT EXISTS `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.steam_data`
       (
-          timestamp STRING OPTIONS (description = 'The year and month of the file from which the data was loaded, in the format YYYYmmmm.'),
+          timestamp DATE OPTIONS (description = 'The date of the file from which the data was loaded, in the format YYYYmmmmdd.'),
           appid INTEGER OPTIONS (description = 'The numeric ID of the game on Steam. This is a unique identifier for each game.'),
           name STRING OPTIONS (description = 'The name of the game as listed on Steam.'),
           release_date STRING OPTIONS (description = 'The date when the game was released on Steam.'),
@@ -104,8 +100,8 @@ tasks:
           pct_pos_recent INTEGER OPTIONS (description = 'The percentage of positive reviews for the game in the recent period. -1 indicates that there are no reviews for the game.'),
           num_reviews_recent INTEGER OPTIONS (description = 'The number of reviews for the game in the recent period. -1 indicates that there are no reviews for the game.')
       )
-      PARTITION BY RANGE_BUCKET(pct_pos_total, GENERATE_ARRAY(-1, 100, 1));
-      
+      PARTITION BY timestamp;
+       
 
   - id: load_to_external_table
     type: io.kestra.plugin.gcp.bigquery.Query
@@ -171,7 +167,7 @@ tasks:
       CREATE OR REPLACE TABLE `{{kv('GCP_PROJECT_ID')}}.{{render(vars.table)}}`
       AS
       SELECT
-        "{{inputs.year}}{{inputs.month}}" AS timestamp,
+        PARSE_DATE('%Y%B%d',  "{{inputs.year}}{{inputs.month}}01") AS timestamp,
         *
       FROM `{{kv('GCP_PROJECT_ID')}}.{{render(vars.table)}}_ext`;
 
@@ -198,6 +194,56 @@ tasks:
     description: To avoid cluttering your storage, we will remove the downloaded files
 
 
+  - id: dbt
+    type: io.kestra.plugin.core.flow.WorkingDirectory
+    tasks:
+
+    - id: clone_repository
+      type: io.kestra.plugin.git.Clone
+      url: https://github.com/dan-sanchez-ugs/steam-games-review-trends
+      branch: main
+      directory: steam-games-review-trends
+      
+    - id: dbt_build
+      type: io.kestra.plugin.dbt.cli.DbtCLI
+      env:
+        DBT_DATABASE: "{{kv('GCP_PROJECT_ID')}}"
+        DBT_SCHEMA: "{{kv('GCP_DATASET')}}"
+      containerImage: ghcr.io/kestra-io/dbt-bigquery:latest
+      taskRunner:
+        type: io.kestra.plugin.scripts.runner.docker.Docker
+      inputFiles:
+        sa.json: "{{secret('GCP_SERVICE_ACCOUNT')}}"
+      commands:
+        - dbt deps --project-dir ./steam-games-review-trends/dbt --target dev
+        - "dbt build --project-dir ./steam-games-review-trends/dbt --target dev" 
+      projectDir: ./steam-games-review-trends/dbt 
+      storeManifest:
+        key: manifest.json
+        namespace: "{{ flow.namespace }}"
+      profiles: |
+        default:
+          outputs:
+            dev:
+              type: bigquery
+              dataset: "{{kv('GCP_DATASET')}}"
+              project: "{{kv('GCP_PROJECT_ID')}}"
+              location: "{{kv('GCP_LOCATION')}}"
+              keyfile: sa.json
+              method: service-account
+              priority: interactive
+              threads: 16
+              timeout_seconds: 300
+              fixed_retries: 1
+          target: dev
+    description: |
+      sources:
+        - name: staging
+          database: "{{kv('GCP_PROJECT_ID')}}"
+          schema: "{{kv('GCP_DATASET')}}"
+          table: steam_data
+
+          
 
 pluginDefaults:
   - type: io.kestra.plugin.gcp
@@ -216,16 +262,3 @@ triggers:
     inputs:
       month: "{{trigger.date | dateAdd(-1, 'DAYS') | date('MMMM') | lower}}"
       year: "{{trigger.date | dateAdd(-1, 'DAYS') | date('yyyy')}}"
-
-
-
-
-
-
-
-
-
-
-
-
-
